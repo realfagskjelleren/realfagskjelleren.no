@@ -7,7 +7,7 @@ import { buildSchema } from "type-graphql";
 import { UserResolver } from "./resolvers/user";
 import Redis from "ioredis";
 import session from "express-session";
-import connectRedis from "connect-redis"; // did not support v4 at first build, so chose ioredis instead
+import connectRedis from "connect-redis";
 import cors from "cors";
 import { createConnection } from "typeorm";
 import { User } from "./entities/User";
@@ -32,7 +32,7 @@ const main = async () => {
 	app.set("trust proxy", 1);
 	app.use(
 		cors({
-			origin: __prod__ ? process.env.CORS_ORIGIN : "http://localhost:3000",
+			origin: process.env.CORS_ORIGIN,
 			credentials: true,
 		})
 	);

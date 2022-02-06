@@ -23,7 +23,9 @@ npm i
 yarn
 ```
 
-You need a Redis server and a PostgreSQL database running. Then you setup your environment-variables according to the examples. If you *only* want to work on the server-side you have update your Cors-origin-url to the Apollo-studio link.
+You need a Redis server and a PostgreSQL database running. Then you setup your environment-variables according to the examples. 
+
+If you *only* want to work on the server-side you have update your Cors-origin-url to the Apollo-studio link in *your* `.env`.
 
 If development is the only concern, then the Dockerfiles can ignored.
 
