@@ -13,7 +13,7 @@ const MenuToggle: FC<MenuToggleProps> = ({
 }: MenuToggleProps) => {
   return (
     <Box display={{ base: "block", md: "none" }} onClick={toggle}>
-      {isOpen ? <CloseIcon /> : <HamburgerIcon />}
+      {isOpen ? <CloseIcon color="black" /> : <HamburgerIcon color="black"/>}
     </Box>
   );
 };

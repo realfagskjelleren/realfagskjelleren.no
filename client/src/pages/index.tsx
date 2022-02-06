@@ -1,9 +1,10 @@
 import type { NextPage } from "next";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../utils/createUrqlClient";
-import { Box } from "@chakra-ui/react";
+import { Layout } from "../components/Layout";
+
 const Home: NextPage = () => {
-  return <Box></Box>;
+  return <Layout></Layout>;
 };
 
 export default withUrqlClient(createUrqlClient, { ssr: true })(Home);

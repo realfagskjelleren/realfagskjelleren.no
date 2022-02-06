@@ -8,6 +8,7 @@ import { Wrapper } from "../components/Wrapper";
 import { useRegisterMutation } from "../generated/graphql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { toErrorMap } from "../utils/toErrorMap";
+import { Layout } from "../components/Layout";
 
 interface registerProps {}
 
@@ -15,6 +16,7 @@ const Register: React.FC<registerProps> = ({}) => {
   const [, register] = useRegisterMutation();
   const router = useRouter();
   return (
+    <Layout>
     <Wrapper variant="small">
       <Formik
         initialValues={{ email: "", username: "", password: "" }}
@@ -65,6 +67,7 @@ const Register: React.FC<registerProps> = ({}) => {
         )}
       </Formik>
     </Wrapper>
+    </Layout>
   );
 };
 

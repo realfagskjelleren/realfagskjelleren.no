@@ -18,13 +18,14 @@ const NavLink: FC<NavLinkProps> = ({ name, url }: NavLinkProps) => {
     <NextLink href={url} passHref>
       <Link _hover={{ textDecoration: "none" }}>
         <Text
-          fontSize="3xl"
+          fontSize={["xl","2xl","3xl","4xl"]}
           display="block"
           textDecoration={isCurrent ? "underline" : "none"}
           textDecorationColor="black"
           textUnderlineOffset="0.2em"
           color="black"
           mr={5}
+          _hover={{ textDecoration: "underline" }}
         >
           {name}
         </Text>

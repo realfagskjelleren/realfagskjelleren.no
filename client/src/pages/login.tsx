@@ -9,11 +9,13 @@ import { useRouter } from "next/router";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
+import { Layout } from "../components/Layout";
 
 const Login: React.FC<{}> = ({}) => {
   const [, login] = useLoginMutation();
   const router = useRouter();
   return (
+    <Layout>
     <Wrapper variant="small">
       <Formik
         initialValues={{ usernameOrEmail: "", password: "" }}
@@ -65,6 +67,7 @@ const Login: React.FC<{}> = ({}) => {
         )}
       </Formik>
     </Wrapper>
+    </Layout>
   );
 };
 
