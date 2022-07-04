@@ -1,59 +1,43 @@
 # realfagskjelleren.no
 
-The website aims to be a traditional website giving information about the organization, booking of the venue and a calendar view of upcoming events, and behind-the-scenes it aims to simplify daily operations, usually for accounting, but also for assigning our volunteers' work-schedules.
+The website consists of two parts: a public (more or less static) website, and a restricted part which is a solution for daily operations, in particular inventory and cost management.
 
-The application uses a variety of technologies including:
-- Node.js
-- React
-- TypeScript
-- GraphQL
-- TypeGraphQL
-- URQL/Apollo
-- TypeORM
-- PostgreSQL
-- Redis
-- Next.js
-- ChakraUI
+## The stack
 
-## How to install dependencies
-In both directories, run:
-```
-npm i
+The stack consists of
 
-yarn
-```
+- Next.js,
+- tRPC,
+- TailwindCSS,
+- TypeScript,
+- Prisma, and
+- NextAuth.
 
-You need a Redis server and a PostgreSQL database running. Then you setup your environment-variables according to the examples. 
+## Run (development) application
 
-If you *only* want to work on the server-side you have update your Cors-origin-url to the Apollo-studio link in *your* `.env`.
+For development you can use
 
-If development is the only concern, then the Dockerfiles can ignored.
-
-To install install all of the above, google will help more than trying to explain it here.
-
-On the client side there is *currently* a moderate RegExp error in one of the dev-dependencies, but since it is only for dev, we ignore the error. Also, *currently*, updating certain packages on the client-side kills everything, so beware of that. 
-
-## How to setup
-In the server, in separate terminals, run:
-```
-npm run watch
-npm run dev
-// or
-yarn dev
-yarn watch
-```
-In the client, run:
 ```
 npm run dev
-// or
-yarn dev
+
 ```
 
-## How to develop in full-stack
-We usually start in the server where you proceed as usual. Afterwards, you create GraphQl queries or mutations in the `graphql` folder located in the client. Then you generate types for those (in the client) by running:
+or
+
 ```
-npm run gen
-// or
-yarn gen
+yarn run dev
+
 ```
-(and refresh IDE-window to update the types). Then you proceed as usual by using these generated types and functions.
+
+## Git preferences
+
+- There is linting, formatting and build tests run before each attempt at committing.
+- We use an automated Kanban board, check out how to commit changes so that it is automated.
+
+## Development
+
+If you wish to contribute, please review the Kanban board and pick a task that is not in progress.
+
+## Future development (after deployment, not currently relevant)
+
+The data stored must be kept safe at all times, deleting it might have big consequences. Therefore, make sure you are not on any production environments. Working on styling and/or adding pages is generally viewed as safe, the same goes for using existing api or server routes. Doing specific server side changes must require some level of development maturity so that the data is kept safe.
