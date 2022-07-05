@@ -2,14 +2,21 @@ import { z } from "zod";
 import { prisma } from "@/server/db/client";
 import { createRouter } from "./context";
 
-export const inviteRouter = createRouter().mutation("invite", {
-	input: z.object({
-		email: z.string(),
-	}),
-	resolve: async ({ input }) => {
-		const invitedUser = await prisma.invitedUser.create({
-			data: { email: input.email },
-		});
-		return invitedUser;
-	},
-});
+export const inviteRouter = createRouter()
+	.query("all", {
+		resolve: async () => {
+			const invitedUsers = await prisma.invitedUser.findMany();
+			return invitedUsers;
+		},
+	})
+	.mutation("invite", {
+		input: z.object({
+			email: z.string(),
+		}),
+		resolve: async ({ input }) => {
+			const invitedUser = await prisma.invitedUser.create({
+				data: { email: input.email },
+			});
+			return invitedUser;
+		},
+	});
