@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { prisma } from "@/server/db/client";
-import { createRouter } from "./context";
+import { createAuthRouter } from "../utils/createRouter";
 
-export const inviteRouter = createRouter()
+export const inviteRouter = createAuthRouter()
 	.query("all", {
 		resolve: async () => {
 			const invitedUsers = await prisma.invitedUser.findMany();

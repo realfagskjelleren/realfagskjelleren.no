@@ -1,5 +1,4 @@
-// src/server/router/index.ts
-import { createRouter } from "./context";
+import { createRouter } from "../utils/createRouter";
 import superjson from "superjson";
 
 import { authRouter } from "./auth";
