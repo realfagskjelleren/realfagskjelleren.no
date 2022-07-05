@@ -29,7 +29,9 @@ const NavBar = () => {
 						<a
 							onClick={(e) => {
 								e.preventDefault();
-								signIn();
+								signIn("google", {
+									callbackUrl: "http://localhost:3000/restricted/dashboard",
+								});
 							}}
 						>
 							Sign in
@@ -66,7 +68,7 @@ const NavBar = () => {
 									<a
 										onClick={(e) => {
 											e.preventDefault();
-											signOut();
+											signOut({ callbackUrl: "http://localhost:3000/" });
 										}}
 									>
 										Sign out
