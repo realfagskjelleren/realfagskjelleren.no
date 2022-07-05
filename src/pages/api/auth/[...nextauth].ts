@@ -14,6 +14,14 @@ export const authOptions: NextAuthOptions = {
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
 		}),
 	],
+	callbacks: {
+		async redirect({ url, baseUrl }) {
+			// Redirect home after signout
+			if (url.startsWith("http://localhost:3000/restricted/")) return baseUrl;
+			// Redirect to dashboard on signin
+			return `${baseUrl}${"/restricted/dashboard/"}`;
+		},
+	},
 };
 
 export default NextAuth(authOptions);
