@@ -40,3 +40,17 @@ export const createAuthRouter = () =>
 			},
 		});
 	});
+
+export const createBoardRouter = () =>
+	createRouter().middleware(({ ctx, next }) => {
+		if (!ctx.session || ctx.session.user.role !== "BOARD") {
+			throw new TRPCError({ code: "UNAUTHORIZED" });
+		}
+		return next({
+			ctx: {
+				...ctx,
+				// infers that `user` is non-nullable downsteam
+				user: ctx.session.user,
+			},
+		});
+	});

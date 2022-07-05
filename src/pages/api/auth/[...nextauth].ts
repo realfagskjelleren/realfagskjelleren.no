@@ -35,6 +35,12 @@ export const authOptions: NextAuthOptions = {
 			// If not existing or invited, no sign in
 			return false;
 		},
+		async session({ session, user }) {
+			if (session.user) {
+				session.user.role = user.role;
+			}
+			return session;
+		},
 	},
 };
 
