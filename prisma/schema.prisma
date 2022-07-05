@@ -68,3 +68,25 @@ model invitedUser {
     email     String   @unique
     invitedAt DateTime @default(now())
 }
+
+// Inventory management
+
+enum Category {
+    BEER
+    ALCOPOP
+    CIDER
+    WINE
+    SPIRITS
+    OTHER
+    CONTAINER
+}
+
+model Good {
+    id       Int      @id @default(autoincrement())
+    name     String
+    brand    String
+    volume   Float
+    category Category
+
+    @@unique([name, brand, volume])
+}
