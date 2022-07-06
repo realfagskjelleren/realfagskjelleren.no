@@ -7,8 +7,8 @@ import { Category } from "@prisma/client";
 export const goodRouter = createAuthRouter()
 	.query("all", {
 		resolve: async () => {
-			const invitedUsers = await prisma.good.findMany();
-			return invitedUsers;
+			const goods = await prisma.good.findMany();
+			return goods;
 		},
 	})
 	// Any mutation or query after will be BOARD auth only
