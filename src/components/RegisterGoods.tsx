@@ -3,11 +3,12 @@ import { Category } from "@prisma/client";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { InferMutationInput, trpc } from "@/utils/trpc";
 
-const RegisterGoods: React.FC<{ modalText: string }> = (props) => {
+const RegisterGoods: React.FC<{ id: string }> = (props) => {
 	const utils = trpc.useContext();
 	const createGoods = trpc.useMutation("good.createMany", {
 		onSuccess: () => {
 			utils.invalidateQueries("good.all");
+			utils.invalidateQueries("good.allByCategory");
 		},
 	});
 
@@ -20,14 +21,11 @@ const RegisterGoods: React.FC<{ modalText: string }> = (props) => {
 
 	return (
 		<>
-			<label htmlFor="my-modal" className="btn modal-button w-16 h-16">
-				{props.modalText}
-			</label>
-			<input type="checkbox" id="my-modal" className="modal-toggle" />
+			<input type="checkbox" id={props.id} className="modal-toggle" />
 			<div className="modal">
 				<div className="modal-box w-11/12 max-w-5xl">
 					<label
-						htmlFor="my-modal"
+						htmlFor={props.id}
 						className="btn btn-sm btn-circle absolute right-2 top-2"
 					>
 						✕
