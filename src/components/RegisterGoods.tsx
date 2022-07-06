@@ -193,10 +193,15 @@ const RegisterGoods: React.FC<{ modalText: string }> = (props) => {
 												</svg>
 												<span>
 													Error!
-													{createGoods.error.data?.code === "BAD_REQUEST" && (
+													{createGoods.error.data?.code === "BAD_REQUEST" ? (
 														<div>
 															The server either recieved an empty, non-selected
 															or nonpositive field.
+														</div>
+													) : (
+														<div>
+															The server experienced an unexpected error, could
+															not create good(s).
 														</div>
 													)}
 												</span>
