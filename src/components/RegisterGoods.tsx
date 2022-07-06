@@ -1,8 +1,16 @@
 import React from "react";
 import { Category } from "@prisma/client";
 import { Field, FieldArray, Form, Formik } from "formik";
+import { InferMutationInput, trpc } from "@/utils/trpc";
 
-const RegisterGoods: React.FC = () => {
+const RegisterGoods: React.FC<{ modalText: string }> = (props) => {
+	const utils = trpc.useContext();
+	const createGoods = trpc.useMutation("good.createMany", {
+		onSuccess: () => {
+			utils.invalidateQueries("good.all");
+		},
+	});
+
 	const goodsObject = {
 		category: "" as Category,
 		brand: "",
@@ -13,7 +21,7 @@ const RegisterGoods: React.FC = () => {
 	return (
 		<>
 			<label htmlFor="my-modal" className="btn modal-button w-16 h-16">
-				+
+				{props.modalText}
 			</label>
 			<input type="checkbox" id="my-modal" className="modal-toggle" />
 			<div className="modal">
@@ -28,12 +36,56 @@ const RegisterGoods: React.FC = () => {
 						Register goods
 					</div>
 					<div className="p-2" />
+					{createGoods.isSuccess && (
+						<>
+							<div className="alert alert-success shadow-lg">
+								<div>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										className="stroke-current flex-shrink-0 h-6 w-6"
+										fill="none"
+										viewBox="0 0 24 24"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth="2"
+											d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+										/>
+									</svg>
+									<span>You created {createGoods.data.created} goods!</span>
+								</div>
+							</div>
+							<div className="p-2" />
+						</>
+					)}
 					<Formik
 						initialValues={{
 							goods: [goodsObject],
 						}}
-						onSubmit={(values) => {
-							console.log(values);
+						onSubmit={(values, { resetForm }) => {
+							if (values.goods === []) return;
+							const formatted: InferMutationInput<"good.createMany"> = [];
+							for (let i = 0; i < values.goods.length; i++) {
+								const good = values.goods[i];
+								if (
+									good?.brand === undefined ||
+									good?.category === undefined ||
+									good?.name === undefined ||
+									good?.volume === undefined
+								) {
+									return;
+								}
+								const parsed = {
+									...good,
+									volume: parseFloat(good.volume),
+								};
+								formatted.push(parsed);
+							}
+							createGoods.mutate(formatted);
+							if (createGoods.isSuccess) {
+								resetForm({ values: { goods: [goodsObject] } });
+							}
 						}}
 					>
 						{({ values }) => (
@@ -78,8 +130,8 @@ const RegisterGoods: React.FC = () => {
 														<Field
 															className="input col-span-2"
 															type="number"
-															min="0.01"
-															step="0.01"
+															min="0.001"
+															step="0.001"
 															name={`goods[${index}].volume`}
 															placeholder="Volume"
 														/>
@@ -121,6 +173,37 @@ const RegisterGoods: React.FC = () => {
 										Submit
 									</button>
 								</div>
+								{createGoods.error?.message && (
+									<div className="">
+										<div className="p-2" />
+										<div className="alert alert-error shadow-lg">
+											<div>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													className="stroke-current flex-shrink-0 h-6 w-6"
+													fill="none"
+													viewBox="0 0 24 24"
+												>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														strokeWidth="2"
+														d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+													/>
+												</svg>
+												<span>
+													Error!
+													{createGoods.error.data?.code === "BAD_REQUEST" && (
+														<div>
+															The server either recieved an empty, non-selected
+															or nonpositive field.
+														</div>
+													)}
+												</span>
+											</div>
+										</div>
+									</div>
+								)}
 							</Form>
 						)}
 					</Formik>
