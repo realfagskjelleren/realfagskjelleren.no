@@ -110,4 +110,6 @@ model Purchase {
     receiver     User     @relation(fields: [receiverId], references: [id])
     supplierId   Int
     supplier     Supplier @relation(fields: [supplierId], references: [id])
+
+    @@unique([goodId, dateRecieved, supplierId])
 }

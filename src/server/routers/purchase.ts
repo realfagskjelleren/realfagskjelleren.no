@@ -1,5 +1,5 @@
 import { prisma } from "@/server/db/client";
-import { Category, Purchase } from "@prisma/client";
+import { Purchase } from "@prisma/client";
 import { z } from "zod";
 import { createBoardRouter } from "../utils/createRouter";
 
@@ -10,7 +10,6 @@ export const purchaseRouter = createBoardRouter().mutation("create", {
 		dateReceived: z.date(),
 		goodsPurchased: z.array(
 			z.object({
-				category: z.nativeEnum(Category),
 				goodId: z.number().int().min(1),
 				units: z.number().int().min(1),
 				price: z.number().min(0.01),

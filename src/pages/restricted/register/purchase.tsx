@@ -55,15 +55,17 @@ const Purchase: NextPage = () => {
 					receiverId: "",
 					supplierId: "",
 					dateReceived: "",
+					time: "",
 					goodsPurchased: [purchaseObject],
 				}}
 				onSubmit={(values, { resetForm }) => {
+					const date = new Date(values.dateReceived);
+					date.setHours(date.getHours() + parseInt(values.time));
 					const formatted: {
 						receiverId: string;
 						supplierId: number;
 						dateReceived: Date;
 						goodsPurchased: Array<{
-							category: Category;
 							goodId: number;
 							units: number;
 							price: number;
@@ -71,14 +73,13 @@ const Purchase: NextPage = () => {
 					} = {
 						receiverId: values.receiverId,
 						supplierId: parseInt(values.supplierId),
-						dateReceived: new Date(values.dateReceived),
+						dateReceived: date,
 						goodsPurchased: [],
 					};
 
 					for (let i = 0; i < values.goodsPurchased.length; i++) {
 						const good = values.goodsPurchased[i];
 						formatted.goodsPurchased.push({
-							category: good?.category as Category,
 							goodId: parseInt(good?.goodId as string),
 							units: parseInt(good?.units as string),
 							price: parseFloat(good?.price as string),
@@ -92,6 +93,7 @@ const Purchase: NextPage = () => {
 								receiverId: "",
 								supplierId: "",
 								dateReceived: "",
+								time: "",
 								goodsPurchased: [purchaseObject],
 							},
 						});
@@ -135,6 +137,10 @@ const Purchase: NextPage = () => {
 							<div>
 								<label className="label label-text col-span-2">Date</label>
 								<Field className="input" type="date" name="dateReceived" />
+							</div>
+							<div>
+								<label className="label label-text col-span-2">Time</label>
+								<TimeField name={"time"} />
 							</div>
 						</div>
 						<div className="divider" />
@@ -279,6 +285,32 @@ const Purchase: NextPage = () => {
 };
 
 export default Purchase;
+
+const TimeField: React.FC<{ name: string }> = (props) => {
+	const times: Array<number> = [];
+	for (let i = 0; i < 24; i++) {
+		times.push(i);
+	}
+
+	const timeToString = (time: number) => {
+		if (time < 10) {
+			return `0${time}:00`;
+		} else {
+			return `${time}:00`;
+		}
+	};
+
+	return (
+		<Field className="select" as="select" name={props.name}>
+			<option value="">--Select time--</option>
+			{times.map((time, index) => (
+				<option key={index} value={time}>
+					{timeToString(time)}
+				</option>
+			))}
+		</Field>
+	);
+};
 
 const CategoryField: React.FC<{ name: string }> = (props) => {
 	const categories = [];
