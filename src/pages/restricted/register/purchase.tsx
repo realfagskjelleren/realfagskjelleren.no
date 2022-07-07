@@ -17,6 +17,7 @@ const Purchase: NextPage = () => {
 	const goods = trpc.useQuery(["good.allByCategory"]);
 	const users = trpc.useQuery(["user.all"]);
 	const suppliers = trpc.useQuery(["supplier.all"]);
+	const purchase = trpc.useMutation("purchase.create");
 
 	return (
 		<div className="h-screen flex flex-col justify-center">
@@ -26,6 +27,29 @@ const Purchase: NextPage = () => {
 				Register purchase
 			</div>
 			<div className="p-2" />
+			{purchase.isSuccess && (
+				<>
+					<div className="alert alert-success shadow-lg">
+						<div>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								className="stroke-current flex-shrink-0 h-6 w-6"
+								fill="none"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="2"
+									d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+								/>
+							</svg>
+							<span>You created a purchase!</span>
+						</div>
+					</div>
+					<div className="p-2" />
+				</>
+			)}
 			<Formik
 				initialValues={{
 					receiverId: "",
@@ -33,8 +57,45 @@ const Purchase: NextPage = () => {
 					dateReceived: "",
 					goodsPurchased: [purchaseObject],
 				}}
-				onSubmit={(values) => {
-					console.log(values);
+				onSubmit={(values, { resetForm }) => {
+					const formatted: {
+						receiverId: string;
+						supplierId: number;
+						dateReceived: Date;
+						goodsPurchased: Array<{
+							category: Category;
+							goodId: number;
+							units: number;
+							price: number;
+						}>;
+					} = {
+						receiverId: values.receiverId,
+						supplierId: parseInt(values.supplierId),
+						dateReceived: new Date(values.dateReceived),
+						goodsPurchased: [],
+					};
+
+					for (let i = 0; i < values.goodsPurchased.length; i++) {
+						const good = values.goodsPurchased[i];
+						formatted.goodsPurchased.push({
+							category: good?.category as Category,
+							goodId: parseInt(good?.goodId as string),
+							units: parseInt(good?.units as string),
+							price: parseFloat(good?.price as string),
+						});
+					}
+
+					purchase.mutate(formatted);
+					if (purchase.isSuccess && !purchase.isError) {
+						resetForm({
+							values: {
+								receiverId: "",
+								supplierId: "",
+								dateReceived: "",
+								goodsPurchased: [purchaseObject],
+							},
+						});
+					}
 				}}
 			>
 				{({ values }) => (
@@ -174,6 +235,42 @@ const Purchase: NextPage = () => {
 								Submit
 							</button>
 						</div>
+						{purchase.error?.message && (
+							<div className="">
+								<div className="p-2" />
+								<div className="alert alert-error shadow-lg">
+									<div>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											className="stroke-current flex-shrink-0 h-6 w-6"
+											fill="none"
+											viewBox="0 0 24 24"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth="2"
+												d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+											/>
+										</svg>
+										<span>
+											Error!
+											{purchase.error.data?.code === "BAD_REQUEST" ? (
+												<div>
+													The server either recieved an empty, non-selected or
+													nonpositive field.
+												</div>
+											) : (
+												<div>
+													The server experienced an unexpected error, could not
+													create good(s).
+												</div>
+											)}
+										</span>
+									</div>
+								</div>
+							</div>
+						)}
 					</Form>
 				)}
 			</Formik>
