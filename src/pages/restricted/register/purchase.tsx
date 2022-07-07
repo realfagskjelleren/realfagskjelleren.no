@@ -12,20 +12,25 @@ const Purchase: NextPage = () => {
 		units: "",
 		price: "",
 	};
-	const modalId = "register-good";
+	const goodModalId = "register-good";
+	const supplierModalId = "register-supplier";
 	const goods = trpc.useQuery(["good.allByCategory"]);
+	const users = trpc.useQuery(["user.all"]);
+	const suppliers = trpc.useQuery(["supplier.all"]);
 
 	return (
 		<div className="h-screen flex flex-col justify-center">
-			<RegisterGoods id={modalId} />
+			<RegisterGoods id={goodModalId} />
+			<RegisterSupplier id={supplierModalId} />
 			<div className="text-2xl flex flex-row justify-center">
 				Register purchase
 			</div>
 			<div className="p-2" />
 			<Formik
 				initialValues={{
-					recieverId: "",
-					dateRecieved: "",
+					receiverId: "",
+					supplierId: "",
+					dateReceived: "",
 					goodsPurchased: [purchaseObject],
 				}}
 				onSubmit={(values) => {
@@ -33,7 +38,45 @@ const Purchase: NextPage = () => {
 				}}
 			>
 				{({ values }) => (
-					<Form className="w-full">
+					<Form className="w-full shadow-xl p-4">
+						<div className="flex flex-row justify-evenly">
+							<div>
+								<label className="label label-text col-span-2">Receiver</label>
+								{!users.isLoading && users.data && (
+									<ReceiverField name={"receiverId"} users={users.data} />
+								)}
+							</div>
+							<div className="flex flex-row">
+								<div>
+									<label className="label label-text col-span-2">
+										Supplier
+									</label>
+									{!suppliers.isLoading && suppliers.data && (
+										<SupplierField
+											name={"supplierId"}
+											suppliers={suppliers.data}
+										/>
+									)}
+								</div>
+								<div className="p-1" />
+								<div>
+									<label className="label label-text col-span-2">
+										Add supplier
+									</label>
+									<label
+										htmlFor={supplierModalId}
+										className="btn modal-button w-12 h-12"
+									>
+										+
+									</label>
+								</div>
+							</div>
+							<div>
+								<label className="label label-text col-span-2">Date</label>
+								<Field className="input" type="date" name="dateReceived" />
+							</div>
+						</div>
+						<div className="divider" />
 						<FieldArray
 							name="goodsPurchased"
 							render={(arrayHelpers) => (
@@ -71,8 +114,8 @@ const Purchase: NextPage = () => {
 															goods={goods.data}
 														/>
 														<label
-															htmlFor={modalId}
-															className="btn modal-button w-16 h-16"
+															htmlFor={goodModalId}
+															className="btn modal-button w-12 h-12"
 														>
 															+
 														</label>
