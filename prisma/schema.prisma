@@ -43,14 +43,15 @@ enum Role {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String     @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?    @unique
     emailVerified DateTime?
     image         String?
-    role          Role      @default(MEMBER)
+    role          Role       @default(MEMBER)
     accounts      Account[]
     sessions      Session[]
+    Purchase      Purchase[]
 }
 
 model VerificationToken {
@@ -80,11 +81,23 @@ enum Category {
 }
 
 model Good {
-    id       Int      @id @default(autoincrement())
+    id       Int        @id @default(autoincrement())
     name     String
     brand    String
     volume   Float
     category Category
+    Purchase Purchase[]
 
     @@unique([name, brand, volume])
+}
+
+model Purchase {
+    id           Int      @id @default(autoincrement())
+    goodId       Int
+    good         Good     @relation(fields: [goodId], references: [id])
+    pricePerUnit Float
+    units        Int
+    dateRecieved DateTime
+    receiverId   String
+    receiver     User     @relation(fields: [receiverId], references: [id])
 }
