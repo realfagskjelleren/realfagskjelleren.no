@@ -1,3 +1,4 @@
+import { dateToString } from "@/utils/dateHelpers";
 import { InferQueryOutput, trpc } from "@/utils/trpc";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import type { NextPage } from "next";
@@ -102,7 +103,7 @@ const InvitedUsers: React.FC<{ users: InferQueryOutput<"invite.all"> }> = (
 						<tr key={index}>
 							<td>{index + 1}</td>
 							<td>{user.email}</td>
-							<td>{user.invitedAt.toDateString()}</td>
+							<td>{dateToString(user.invitedAt)}</td>
 						</tr>
 					))}
 				</tbody>
