@@ -4,10 +4,24 @@ import { z } from "zod";
 import { createBoardRouter } from "../utils/createRouter";
 
 export const purchaseRouter = createBoardRouter()
-	.query("all", {
-		resolve: async () => {
+	.query("allInPeriod", {
+		input: z.object({
+			start: z.date(),
+			end: z.date(),
+		}),
+		resolve: async ({ input }) => {
+			const end = new Date(
+				Date.UTC(
+					input.end.getUTCFullYear(),
+					input.end.getUTCMonth(),
+					input.end.getUTCDate(),
+					23
+				)
+			);
+
 			const purchases = await prisma.purchase.findMany({
-				orderBy: { dateReceived: "desc" },
+				where: { dateReceived: { gte: input.start, lte: end } },
+				orderBy: { dateReceived: "asc" },
 				include: { good: true, supplier: true, receiver: true },
 			});
 

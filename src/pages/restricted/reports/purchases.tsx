@@ -1,14 +1,50 @@
 import { dateToString } from "@/utils/dateHelpers";
 import { InferQueryOutput, trpc } from "@/utils/trpc";
 import type { NextPage } from "next";
-import React from "react";
+import React, { useState } from "react";
+import Image from "next/image";
 
 const PurchaseReports: NextPage = () => {
-	const pReports = trpc.useQuery(["purchase.all"]);
+	const today = new Date();
+	const monthStart = new Date(
+		Date.UTC(today.getFullYear(), today.getMonth(), 1, 0)
+	);
+	const monthEnd = new Date(
+		Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0)
+	);
+	const [start, setStart] = useState(monthStart.toISOString().substring(0, 10));
+	const [end, setEnd] = useState(monthEnd.toISOString().substring(0, 10));
+	const pReports = trpc.useQuery([
+		"purchase.allInPeriod",
+		{ start: new Date(start), end: new Date(end) },
+	]);
 	return (
 		<div className="h-screen flex flex-col">
 			<div className="p-2" />
 			<div className="text-2xl flex flex-row justify-center">Purchases</div>
+			<div className="p-2" />
+			<div className="flex flex-row w-1/5 items-center">
+				<label className="input-group">
+					<span>Start</span>
+					<input
+						className="input"
+						type="date"
+						name="start"
+						value={start}
+						onChange={(e) => setStart(e.target.value)}
+					/>
+				</label>
+				<label className="input-group">
+					<span>End</span>
+					<input
+						className="input"
+						type="date"
+						name="start"
+						value={end}
+						onChange={(e) => setEnd(e.target.value)}
+					/>
+				</label>
+			</div>
 			<div className="p-2" />
 			{!pReports.isLoading && pReports.data && (
 				<>
@@ -27,7 +63,7 @@ const PurchaseReports: NextPage = () => {
 export default PurchaseReports;
 
 const PurchaseCard: React.FC<{
-	pReport: InferQueryOutput<"purchase.all">[number];
+	pReport: InferQueryOutput<"purchase.allInPeriod">[number];
 }> = (props) => {
 	return (
 		<div className="collapse">
