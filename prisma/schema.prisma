@@ -105,11 +105,11 @@ model Purchase {
     good         Good     @relation(fields: [goodId], references: [id])
     pricePerUnit Float
     units        Int
-    dateRecieved DateTime
+    dateReceived DateTime
     receiverId   String
     receiver     User     @relation(fields: [receiverId], references: [id])
     supplierId   Int
     supplier     Supplier @relation(fields: [supplierId], references: [id])
 
-    @@unique([goodId, dateRecieved, supplierId])
+    @@unique([goodId, dateReceived, supplierId])
 }
