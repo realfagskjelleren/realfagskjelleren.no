@@ -72,6 +72,7 @@ const purchaseReports = (
 ) => {
 	let purchaseContext: {
 		receiver: string;
+		receiverImage?: string;
 		supplier: string;
 		dateReceived: Date;
 		totalValue: number;
@@ -107,6 +108,9 @@ const purchaseReports = (
 				(partialSum, pur) => partialSum + pur.value,
 				0
 			);
+			if (p?.receiver.image) {
+				purchaseContext.receiverImage = p.receiver.image;
+			}
 
 			reports.push(purchaseContext);
 		} else if (
@@ -119,6 +123,10 @@ const purchaseReports = (
 				(partialSum, pur) => partialSum + pur.value,
 				0
 			);
+			if (p?.receiver.image) {
+				purchaseContext.receiverImage = p.receiver.image;
+			}
+
 			reports.push(purchaseContext);
 
 			purchaseContext = {

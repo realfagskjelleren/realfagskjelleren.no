@@ -73,13 +73,27 @@ const PurchaseCard: React.FC<{
 					{dateToString(props.pReport.dateReceived)}
 				</div>
 				<div className="grid flex-grow place-items-center">
-					{props.pReport.receiver}
-				</div>
-				<div className="grid flex-grow place-items-center">
 					{props.pReport.supplier}
 				</div>
 				<div className="grid flex-grow place-items-center">
 					{props.pReport.totalValue.toFixed(2)} kr
+				</div>
+				<div className="grid flex-grow place-items-center">
+					<div className="flex space-x-3 items-center">
+						{props.pReport.receiverImage && (
+							<div className="avatar">
+								<div className="w-8 mask mask-squircle">
+									<Image
+										width={32}
+										height={32}
+										layout={"fixed"}
+										src={props.pReport.receiverImage}
+									/>
+								</div>
+							</div>
+						)}
+						<div>{props.pReport.receiver}</div>
+					</div>
 				</div>
 			</div>
 			<div className="collapse-content p-0">
@@ -88,8 +102,8 @@ const PurchaseCard: React.FC<{
 						<tr className="">
 							<th className="w-1/4">Category</th>
 							<th className="w-1/4">Good</th>
-							<th className="w-1/4">Units</th>
 							<th className="w-1/4">Price</th>
+							<th className="w-1/4">Units</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -99,8 +113,8 @@ const PurchaseCard: React.FC<{
 								<td>
 									{p.brand} - {p.name} - {p.volume}
 								</td>
-								<td>{p.units}</td>
 								<td>{p.value.toFixed(2)} kr</td>
+								<td>{p.units}</td>
 							</tr>
 						))}
 					</tbody>
