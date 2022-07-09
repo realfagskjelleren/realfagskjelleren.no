@@ -1,18 +1,20 @@
+import { ErrorFormAlert, SuccessFormAlert } from "@/components/FormAlerts";
+import { dateToString } from "@/utils/dateHelpers";
 import { InferQueryOutput, trpc } from "@/utils/trpc";
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
 import React from "react";
 
 const Invite: NextPage = () => {
-	const router = useRouter();
 	const invited = trpc.useQuery(["invite.all"]);
 	const invite = trpc.useMutation(["invite.invite"]);
 	const dataLoaded = invited.data && !invited.isLoading;
 
 	return (
-		<div className="h-screen flex flex-col justify-center">
+		<div className="min-h-screen flex flex-col justify-center">
 			<div className="text-2xl flex flex-row justify-center">Invite User</div>
+			<div className="p-2" />
+			{invite.isSuccess && <SuccessFormAlert created={"invite"} />}
 			<div className="p-2" />
 			<Formik
 				initialValues={{ email: "" }}
@@ -21,13 +23,8 @@ const Invite: NextPage = () => {
 						return { email: "Must be a gmail!" };
 					}
 				}}
-				onSubmit={(values, { setErrors }) => {
+				onSubmit={(values) => {
 					invite.mutate({ email: values.email });
-					if (!invite.isSuccess && invite.isError) {
-						setErrors({ email: invite.error.message });
-					} else if (invite.isSuccess) {
-						router.push("/restricted/dashboard");
-					}
 				}}
 			>
 				{() => (
@@ -40,32 +37,6 @@ const Invite: NextPage = () => {
 								name="email"
 								placeholder="Gmail"
 							/>
-							<ErrorMessage
-								name="email"
-								render={(msg) => (
-									<>
-										<div className="p-2" />
-										<div className="alert alert-error shadow-lg">
-											<div>
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													className="stroke-current flex-shrink-0 h-6 w-6"
-													fill="none"
-													viewBox="0 0 24 24"
-												>
-													<path
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														strokeWidth="2"
-														d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-													/>
-												</svg>
-												<span>Error! {msg}</span>
-											</div>
-										</div>
-									</>
-								)}
-							/>
 							<div className="p-2" />
 							<button type="submit" className="btn btn-primary">
 								Submit
@@ -74,6 +45,19 @@ const Invite: NextPage = () => {
 					</div>
 				)}
 			</Formik>
+			<div className="p-2" />
+			{invite.error && invite.error.data && (
+				<>
+					{invite.error.data?.code === "BAD_REQUEST" ? (
+						<ErrorFormAlert
+							badReq="The server either recieved an empty, or you did not give a gmail."
+							attempt="invite"
+						/>
+					) : (
+						<ErrorFormAlert attempt="invite" />
+					)}
+				</>
+			)}
 			<div className="p-5" />
 			{dataLoaded && <InvitedUsers users={invited.data} />}
 		</div>
@@ -102,7 +86,7 @@ const InvitedUsers: React.FC<{ users: InferQueryOutput<"invite.all"> }> = (
 						<tr key={index}>
 							<td>{index + 1}</td>
 							<td>{user.email}</td>
-							<td>{user.invitedAt.toDateString()}</td>
+							<td>{dateToString(user.invitedAt)}</td>
 						</tr>
 					))}
 				</tbody>

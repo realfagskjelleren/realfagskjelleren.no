@@ -2,14 +2,12 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["referentialIntegrity"]
+    provider = "prisma-client-js"
 }
 
 datasource db {
-    provider             = "postgresql"
-    url                  = env("DATABASE_URL")
-    referentialIntegrity = "prisma"
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 // Necessary for Next auth
@@ -45,14 +43,15 @@ enum Role {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String     @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?    @unique
     emailVerified DateTime?
     image         String?
-    role          Role      @default(MEMBER)
+    role          Role       @default(MEMBER)
     accounts      Account[]
     sessions      Session[]
+    purchases     Purchase[]
 }
 
 model VerificationToken {
@@ -82,11 +81,35 @@ enum Category {
 }
 
 model Good {
-    id       Int      @id @default(autoincrement())
-    name     String
-    brand    String
-    volume   Float
-    category Category
+    id        Int        @id @default(autoincrement())
+    name      String
+    brand     String
+    volume    Float
+    category  Category
+    purchases Purchase[]
 
     @@unique([name, brand, volume])
+}
+
+model Supplier {
+    id        Int        @id @default(autoincrement())
+    name      String
+    orgNum    Int        @unique
+    purchases Purchase[]
+
+}
+
+model Purchase {
+    id           Int      @id @default(autoincrement())
+    goodId       Int
+    good         Good     @relation(fields: [goodId], references: [id])
+    pricePerUnit Float
+    units        Int
+    dateReceived DateTime
+    receiverId   String
+    receiver     User     @relation(fields: [receiverId], references: [id])
+    supplierId   Int
+    supplier     Supplier @relation(fields: [supplierId], references: [id])
+
+    @@unique([goodId, dateReceived, supplierId])
 }

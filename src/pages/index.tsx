@@ -3,7 +3,7 @@ import React from "react";
 
 const Home: NextPage = () => {
 	return (
-		<div className="h-screen flex flex-col justify-center">
+		<div className="min-h-screen flex flex-col justify-center">
 			<div className="text-2xl flex flex-row justify-center">
 				Realfagskjelleren
 			</div>

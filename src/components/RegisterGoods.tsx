@@ -2,12 +2,14 @@ import React from "react";
 import { Category } from "@prisma/client";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { InferMutationInput, trpc } from "@/utils/trpc";
+import { ErrorFormAlert, SuccessFormAlert } from "./FormAlerts";
 
-const RegisterGoods: React.FC<{ modalText: string }> = (props) => {
+const RegisterGoods: React.FC<{ id: string }> = (props) => {
 	const utils = trpc.useContext();
 	const createGoods = trpc.useMutation("good.createMany", {
 		onSuccess: () => {
 			utils.invalidateQueries("good.all");
+			utils.invalidateQueries("good.allByCategory");
 		},
 	});
 
@@ -20,14 +22,11 @@ const RegisterGoods: React.FC<{ modalText: string }> = (props) => {
 
 	return (
 		<>
-			<label htmlFor="my-modal" className="btn modal-button w-16 h-16">
-				{props.modalText}
-			</label>
-			<input type="checkbox" id="my-modal" className="modal-toggle" />
+			<input type="checkbox" id={props.id} className="modal-toggle" />
 			<div className="modal">
 				<div className="modal-box w-11/12 max-w-5xl">
 					<label
-						htmlFor="my-modal"
+						htmlFor={props.id}
 						className="btn btn-sm btn-circle absolute right-2 top-2"
 					>
 						✕
@@ -36,56 +35,26 @@ const RegisterGoods: React.FC<{ modalText: string }> = (props) => {
 						Register goods
 					</div>
 					<div className="p-2" />
-					{createGoods.isSuccess && (
-						<>
-							<div className="alert alert-success shadow-lg">
-								<div>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										className="stroke-current flex-shrink-0 h-6 w-6"
-										fill="none"
-										viewBox="0 0 24 24"
-									>
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											strokeWidth="2"
-											d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-										/>
-									</svg>
-									<span>You created {createGoods.data.created} goods!</span>
-								</div>
-							</div>
-							<div className="p-2" />
-						</>
-					)}
+					{createGoods.isSuccess && <SuccessFormAlert created="goods" />}
+					<div className="p-2" />
 					<Formik
 						initialValues={{
 							goods: [goodsObject],
 						}}
-						onSubmit={(values, { resetForm }) => {
+						onSubmit={(values) => {
 							if (values.goods === []) return;
 							const formatted: InferMutationInput<"good.createMany"> = [];
 							for (let i = 0; i < values.goods.length; i++) {
 								const good = values.goods[i];
-								if (
-									good?.brand === undefined ||
-									good?.category === undefined ||
-									good?.name === undefined ||
-									good?.volume === undefined
-								) {
-									return;
-								}
 								const parsed = {
-									...good,
-									volume: parseFloat(good.volume),
+									category: good?.category as Category,
+									name: good?.name as string,
+									brand: good?.brand as string,
+									volume: parseFloat(good?.volume as string),
 								};
 								formatted.push(parsed);
 							}
 							createGoods.mutate(formatted);
-							if (createGoods.isSuccess) {
-								resetForm({ values: { goods: [goodsObject] } });
-							}
 						}}
 					>
 						{({ values }) => (
@@ -173,45 +142,22 @@ const RegisterGoods: React.FC<{ modalText: string }> = (props) => {
 										Submit
 									</button>
 								</div>
-								{createGoods.error?.message && (
-									<div className="">
-										<div className="p-2" />
-										<div className="alert alert-error shadow-lg">
-											<div>
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													className="stroke-current flex-shrink-0 h-6 w-6"
-													fill="none"
-													viewBox="0 0 24 24"
-												>
-													<path
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														strokeWidth="2"
-														d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-													/>
-												</svg>
-												<span>
-													Error!
-													{createGoods.error.data?.code === "BAD_REQUEST" ? (
-														<div>
-															The server either recieved an empty, non-selected
-															or nonpositive field.
-														</div>
-													) : (
-														<div>
-															The server experienced an unexpected error, could
-															not create good(s).
-														</div>
-													)}
-												</span>
-											</div>
-										</div>
-									</div>
-								)}
 							</Form>
 						)}
 					</Formik>
+					<div className="p-2" />
+					{createGoods.error && createGoods.error.data && (
+						<>
+							{createGoods.error.data?.code === "BAD_REQUEST" ? (
+								<ErrorFormAlert
+									badReq="The server either recieved an empty, non-selected or nonpositive field."
+									attempt="goods"
+								/>
+							) : (
+								<ErrorFormAlert attempt="goods" />
+							)}
+						</>
+					)}
 				</div>
 			</div>
 		</>
