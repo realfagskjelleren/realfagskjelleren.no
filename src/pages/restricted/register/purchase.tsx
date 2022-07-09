@@ -1,4 +1,5 @@
 import RegisterGoods from "@/components/RegisterGoods";
+import { dateAsUTC } from "@/utils/dateHelpers";
 import { InferQueryOutput, trpc } from "@/utils/trpc";
 import { Category } from "@prisma/client";
 import { Field, FieldArray, Form, Formik } from "formik";
@@ -59,8 +60,8 @@ const Purchase: NextPage = () => {
 					goodsPurchased: [purchaseObject],
 				}}
 				onSubmit={(values, { resetForm }) => {
-					const date = new Date(values.dateReceived);
-					date.setHours(date.getHours() + parseInt(values.time));
+					const dReceived = dateAsUTC(new Date(values.dateReceived));
+					dReceived.setHours(dReceived.getUTCHours() + parseInt(values.time));
 					const formatted: {
 						receiverId: string;
 						supplierId: number;
@@ -73,7 +74,7 @@ const Purchase: NextPage = () => {
 					} = {
 						receiverId: values.receiverId,
 						supplierId: parseInt(values.supplierId),
-						dateReceived: date,
+						dateReceived: dReceived,
 						goodsPurchased: [],
 					};
 
