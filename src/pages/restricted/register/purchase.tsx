@@ -7,9 +7,11 @@ import { trpc } from "@/utils/trpc";
 import { Category } from "@prisma/client";
 import { Formik } from "formik";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import React from "react";
 
 const Purchase: NextPage = () => {
+	const router = useRouter();
 	const purchaseObject = {
 		category: "" as Category,
 		goodId: "",
@@ -18,10 +20,16 @@ const Purchase: NextPage = () => {
 	};
 	const goodModalId = "register-good";
 	const supplierModalId = "register-supplier";
+	const utils = trpc.useContext();
 	const goods = trpc.useQuery(["good.allByCategory"]);
 	const users = trpc.useQuery(["user.all"]);
 	const suppliers = trpc.useQuery(["supplier.all"]);
-	const purchase = trpc.useMutation("purchase.create");
+	const purchase = trpc.useMutation("purchase.create", {
+		onSuccess: () => {
+			utils.invalidateQueries("purchase.allInPeriod");
+			router.push("/restricted/reports/purchases");
+		},
+	});
 
 	const dataLoaded =
 		!goods.isLoading &&
@@ -49,7 +57,7 @@ const Purchase: NextPage = () => {
 					time: "",
 					goodsPurchased: [purchaseObject],
 				}}
-				onSubmit={(values, { resetForm }) => {
+				onSubmit={(values) => {
 					const dReceived = dateAsUTC(new Date(values.dateReceived));
 					dReceived.setHours(dReceived.getUTCHours() + parseInt(values.time));
 					const formatted: {
@@ -78,17 +86,6 @@ const Purchase: NextPage = () => {
 					}
 
 					purchase.mutate(formatted);
-					if (purchase.isSuccess && !purchase.isError) {
-						resetForm({
-							values: {
-								receiverId: "",
-								supplierId: "",
-								dateReceived: "",
-								time: "",
-								goodsPurchased: [purchaseObject],
-							},
-						});
-					}
 				}}
 			>
 				{({ values }) => (

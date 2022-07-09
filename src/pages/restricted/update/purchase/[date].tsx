@@ -24,6 +24,7 @@ const UpdatePurchase: NextPage = () => {
 	const updatePurchase = trpc.useMutation("purchase.update", {
 		onSuccess: () => {
 			utils.invalidateQueries("purchase.allInPeriod");
+			router.back();
 		},
 	});
 	const purchase = trpc.useQuery([

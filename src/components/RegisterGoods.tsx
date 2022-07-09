@@ -41,29 +41,20 @@ const RegisterGoods: React.FC<{ id: string }> = (props) => {
 						initialValues={{
 							goods: [goodsObject],
 						}}
-						onSubmit={(values, { resetForm }) => {
+						onSubmit={(values) => {
 							if (values.goods === []) return;
 							const formatted: InferMutationInput<"good.createMany"> = [];
 							for (let i = 0; i < values.goods.length; i++) {
 								const good = values.goods[i];
-								if (
-									good?.brand === undefined ||
-									good?.category === undefined ||
-									good?.name === undefined ||
-									good?.volume === undefined
-								) {
-									return;
-								}
 								const parsed = {
-									...good,
-									volume: parseFloat(good.volume),
+									category: good?.category as Category,
+									name: good?.name as string,
+									brand: good?.brand as string,
+									volume: parseFloat(good?.volume as string),
 								};
 								formatted.push(parsed);
 							}
 							createGoods.mutate(formatted);
-							if (createGoods.isSuccess) {
-								resetForm({ values: { goods: [goodsObject] } });
-							}
 						}}
 					>
 						{({ values }) => (

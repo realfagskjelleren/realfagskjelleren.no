@@ -29,14 +29,11 @@ const RegisterSupplier: React.FC<{ id: string }> = (props) => {
 					<div className="p-2" />
 					<Formik
 						initialValues={{ name: "", orgNum: "" }}
-						onSubmit={(values, { resetForm }) => {
+						onSubmit={(values) => {
 							supplier.mutate({
 								...values,
 								orgNum: parseInt(values.orgNum),
 							});
-							if (supplier.isSuccess) {
-								resetForm({ values: { name: "", orgNum: "" } });
-							}
 						}}
 					>
 						{() => (
