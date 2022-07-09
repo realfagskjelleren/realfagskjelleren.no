@@ -1,3 +1,4 @@
+import { ErrorFormAlert, SuccessFormAlert } from "@/components/FormAlerts";
 import {
 	CategoryField,
 	GoodField,
@@ -64,29 +65,8 @@ const UpdatePurchase: NextPage = () => {
 				Update purchase
 			</div>
 			<div className="p-2" />
-			{updatePurchase.isSuccess && (
-				<>
-					<div className="alert alert-success shadow-lg">
-						<div>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								className="stroke-current flex-shrink-0 h-6 w-6"
-								fill="none"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-								/>
-							</svg>
-							<span>You updated a purchase!</span>
-						</div>
-					</div>
-					<div className="p-2" />
-				</>
-			)}
+			{updatePurchase.isSuccess && <SuccessFormAlert updated={"purchase"} />}
+			<div className="p-2" />
 			{!purchase.isLoading && purchase.data && purchase.data[0] && (
 				<Formik
 					initialValues={{
@@ -273,45 +253,22 @@ const UpdatePurchase: NextPage = () => {
 									Submit
 								</button>
 							</div>
-							{updatePurchase.error?.message && (
-								<div className="">
-									<div className="p-2" />
-									<div className="alert alert-error shadow-lg">
-										<div>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												className="stroke-current flex-shrink-0 h-6 w-6"
-												fill="none"
-												viewBox="0 0 24 24"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth="2"
-													d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-												/>
-											</svg>
-											<span>
-												Error!
-												{updatePurchase.error.data?.code === "BAD_REQUEST" ? (
-													<div>
-														The server either recieved an empty, non-selected or
-														nonpositive field.
-													</div>
-												) : (
-													<div>
-														The server experienced an unexpected error, could
-														not create good(s).
-													</div>
-												)}
-											</span>
-										</div>
-									</div>
-								</div>
-							)}
 						</Form>
 					)}
 				</Formik>
+			)}
+			<div className="p-2" />
+			{updatePurchase.error && updatePurchase.error.data && (
+				<>
+					{updatePurchase.error.data?.code === "BAD_REQUEST" ? (
+						<ErrorFormAlert
+							badReq="The server either recieved an empty, non-selected or nonpositive field."
+							attempt="purchase"
+						/>
+					) : (
+						<ErrorFormAlert attempt="purchase" />
+					)}
+				</>
 			)}
 		</div>
 	);

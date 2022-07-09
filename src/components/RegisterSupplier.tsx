@@ -1,6 +1,7 @@
 import { trpc } from "@/utils/trpc";
 import { Field, Form, Formik } from "formik";
 import React from "react";
+import { ErrorFormAlert, SuccessFormAlert } from "./FormAlerts";
 
 const RegisterSupplier: React.FC<{ id: string }> = (props) => {
 	const utils = trpc.useContext();
@@ -24,32 +25,8 @@ const RegisterSupplier: React.FC<{ id: string }> = (props) => {
 						Register supplier
 					</div>
 					<div className="p-2" />
-					{supplier.isSuccess && (
-						<>
-							<div className="alert alert-success shadow-lg">
-								<div>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										className="stroke-current flex-shrink-0 h-6 w-6"
-										fill="none"
-										viewBox="0 0 24 24"
-									>
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											strokeWidth="2"
-											d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-										/>
-									</svg>
-									<span>
-										You created the supplier {supplier.data.name} -
-										{supplier.data.orgNum}!
-									</span>
-								</div>
-							</div>
-							<div className="p-2" />
-						</>
-					)}
+					{supplier.isSuccess && <SuccessFormAlert created="supplier" />}
+					<div className="p-2" />
 					<Formik
 						initialValues={{ name: "", orgNum: "" }}
 						onSubmit={(values, { resetForm }) => {
@@ -92,46 +69,22 @@ const RegisterSupplier: React.FC<{ id: string }> = (props) => {
 										Submit
 									</button>
 								</div>
-								{supplier.error?.message && (
-									<div className="">
-										<div className="p-2" />
-										<div className="alert alert-error shadow-lg">
-											<div>
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													className="stroke-current flex-shrink-0 h-6 w-6"
-													fill="none"
-													viewBox="0 0 24 24"
-												>
-													<path
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														strokeWidth="2"
-														d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-													/>
-												</svg>
-												<span>
-													Error!
-													{supplier.error.data?.code === "BAD_REQUEST" ? (
-														<div>
-															The server either received an illegal name or the
-															organization number is not 9 length
-														</div>
-													) : (
-														<div>
-															The server experienced an unexpected error, could
-															not create the supplier. Mostly likely, the
-															supplier already exists.
-														</div>
-													)}
-												</span>
-											</div>
-										</div>
-									</div>
-								)}
 							</Form>
 						)}
 					</Formik>
+					<div className="p-2" />
+					{supplier.error && supplier.error.data && (
+						<>
+							{supplier.error.data?.code === "BAD_REQUEST" ? (
+								<ErrorFormAlert
+									badReq="The server either received an illegal name or the organization number is not 9 length."
+									attempt="supplier"
+								/>
+							) : (
+								<ErrorFormAlert attempt="supplier" />
+							)}
+						</>
+					)}
 				</div>
 			</div>
 		</>
