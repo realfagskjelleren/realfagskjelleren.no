@@ -22,5 +22,5 @@ export const dateToString = (d: Date) => {
 };
 
 export const dateToURL = (d: Date) => {
-	return `${dateAsUTC(d).toISOString()}`;
+	return `${d.toISOString()}`;
 };

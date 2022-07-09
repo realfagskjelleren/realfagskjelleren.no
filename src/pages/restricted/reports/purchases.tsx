@@ -1,8 +1,9 @@
-import { dateToString } from "@/utils/dateHelpers";
+import { dateToString, dateToURL } from "@/utils/dateHelpers";
 import { InferQueryOutput, trpc } from "@/utils/trpc";
 import type { NextPage } from "next";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const PurchaseReports: NextPage = () => {
 	const today = new Date();
@@ -51,7 +52,7 @@ const PurchaseReports: NextPage = () => {
 						/>
 					</label>
 				</div>
-				{!pReports.isLoading && pReports.data && pReports.data.length > 1 && (
+				{!pReports.isLoading && pReports.data && pReports.data.length > 10 && (
 					<div className="flex flex-row">
 						<Pagination
 							cursor={cursor}
@@ -71,7 +72,7 @@ const PurchaseReports: NextPage = () => {
 							<div className="p-2" />
 						</div>
 					))}
-					{pReports.data.length > 1 && (
+					{pReports.data.length > 10 && (
 						<div className="flex flex-row justify-end">
 							<Pagination
 								cursor={cursor}
@@ -171,6 +172,18 @@ const PurchaseCard: React.FC<{
 						))}
 					</tbody>
 				</table>
+				<div className="p-2" />
+				<div className="flex flex-row justify-end">
+					<Link
+						href={`/restricted/update/purchase/${dateToURL(
+							props.pReport.dateReceived
+						)}`}
+						passHref
+					>
+						<a className="btn btn-primary">Update</a>
+					</Link>
+					<div className="p-2" />
+				</div>
 			</div>
 		</div>
 	);
