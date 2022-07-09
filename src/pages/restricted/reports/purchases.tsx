@@ -1,7 +1,7 @@
 import { dateToString } from "@/utils/dateHelpers";
 import { InferQueryOutput, trpc } from "@/utils/trpc";
 import type { NextPage } from "next";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import Image from "next/image";
 
 const PurchaseReports: NextPage = () => {
@@ -14,46 +14,73 @@ const PurchaseReports: NextPage = () => {
 	);
 	const [start, setStart] = useState(monthStart.toISOString().substring(0, 10));
 	const [end, setEnd] = useState(monthEnd.toISOString().substring(0, 10));
+
+	const take = 10;
+	const [cursor, setCursor] = useState(0);
+
 	const pReports = trpc.useQuery([
 		"purchase.allInPeriod",
 		{ start: new Date(start), end: new Date(end) },
 	]);
+
 	return (
 		<div className="h-screen flex flex-col">
 			<div className="p-2" />
 			<div className="text-2xl flex flex-row justify-center">Purchases</div>
 			<div className="p-2" />
-			<div className="flex flex-row w-1/5 items-center">
-				<label className="input-group">
-					<span>Start</span>
-					<input
-						className="input"
-						type="date"
-						name="start"
-						value={start}
-						onChange={(e) => setStart(e.target.value)}
-					/>
-				</label>
-				<label className="input-group">
-					<span>End</span>
-					<input
-						className="input"
-						type="date"
-						name="start"
-						value={end}
-						onChange={(e) => setEnd(e.target.value)}
-					/>
-				</label>
+			<div className="flex flex-row items-center justify-between">
+				<div className="flex flex-row">
+					<label className="input-group">
+						<span>Start</span>
+						<input
+							className="input"
+							type="date"
+							name="start"
+							value={start}
+							onChange={(e) => setStart(e.target.value)}
+						/>
+					</label>
+					<label className="input-group">
+						<span>End</span>
+						<input
+							className="input"
+							type="date"
+							name="start"
+							value={end}
+							onChange={(e) => setEnd(e.target.value)}
+						/>
+					</label>
+				</div>
+				{!pReports.isLoading && pReports.data && pReports.data.length > 1 && (
+					<div className="flex flex-row">
+						<Pagination
+							cursor={cursor}
+							setCursor={setCursor}
+							take={take}
+							length={pReports.data.length}
+						/>
+					</div>
+				)}
 			</div>
 			<div className="p-2" />
 			{!pReports.isLoading && pReports.data && (
 				<>
-					{pReports.data.map((pReport, index) => (
+					{pReports.data.slice(cursor, cursor + take).map((pReport, index) => (
 						<div key={index}>
 							<PurchaseCard pReport={pReport} />
-							<div className="p-1" />
+							<div className="p-2" />
 						</div>
 					))}
+					{pReports.data.length > 1 && (
+						<div className="flex flex-row justify-end">
+							<Pagination
+								cursor={cursor}
+								setCursor={setCursor}
+								take={take}
+								length={pReports.data.length}
+							/>
+						</div>
+					)}
 				</>
 			)}
 		</div>
@@ -61,6 +88,31 @@ const PurchaseReports: NextPage = () => {
 };
 
 export default PurchaseReports;
+
+const Pagination: React.FC<{
+	cursor: number;
+	setCursor: Dispatch<SetStateAction<number>>;
+	take: number;
+	length: number;
+}> = ({ cursor, setCursor, take, length }) => {
+	let numPages = 1;
+	if (length > take) {
+		numPages = Math.ceil(length / take);
+	}
+	return (
+		<div className="btn-group">
+			<button className="btn" onClick={() => setCursor(cursor - take)}>
+				«
+			</button>
+			<button className="btn">
+				Page {cursor / take + 1}/{numPages}
+			</button>
+			<button className="btn" onClick={() => setCursor(cursor + take)}>
+				»
+			</button>
+		</div>
+	);
+};
 
 const PurchaseCard: React.FC<{
 	pReport: InferQueryOutput<"purchase.allInPeriod">[number];
