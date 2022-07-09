@@ -95,6 +95,21 @@ export const purchaseRouter = createBoardRouter()
 			await prisma.purchase.createMany({ data: formatted });
 			return;
 		},
+	})
+	.mutation("delete", {
+		input: z.object({
+			supplierId: z.number().int().min(1),
+			dateReceived: z.date(),
+		}),
+		resolve: async ({ input }) => {
+			await prisma.purchase.deleteMany({
+				where: {
+					supplierId: input.supplierId,
+					dateReceived: input.dateReceived,
+				},
+			});
+			return;
+		},
 	});
 
 const purchaseReports = (

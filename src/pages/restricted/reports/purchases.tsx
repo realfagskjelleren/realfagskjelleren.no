@@ -118,6 +118,12 @@ const Pagination: React.FC<{
 const PurchaseCard: React.FC<{
 	pReport: InferQueryOutput<"purchase.allInPeriod">[number];
 }> = (props) => {
+	const utils = trpc.useContext();
+	const deleteReport = trpc.useMutation("purchase.delete", {
+		onSuccess: () => {
+			utils.invalidateQueries("purchase.allInPeriod");
+		},
+	});
 	return (
 		<div className="collapse">
 			<input type="checkbox" />
@@ -182,6 +188,34 @@ const PurchaseCard: React.FC<{
 					>
 						<a className="btn btn-primary">Update</a>
 					</Link>
+					<div className="p-2" />
+					<div className="dropdown dropdown-top dropdown-end">
+						<label tabIndex={0} className="btn btn-outline btn-error">
+							Delete
+						</label>
+						<div
+							tabIndex={0}
+							className="dropdown-content p-4 shadow bg-base-300 rounded-box w-56"
+						>
+							<div className="w-full flex flex-row items-center justify-between">
+								<div className="font-bold text-xl">Are you sure?</div>
+								<button
+									className="btn btn-xs btn-error m-2"
+									onClick={() => {
+										deleteReport.mutate({
+											dateReceived: props.pReport.dateReceived,
+											supplierId: props.pReport.supplierId,
+										});
+									}}
+								>
+									Yes
+								</button>
+							</div>
+							{deleteReport.isError && (
+								<div className="text-sm">Server could not delete...</div>
+							)}
+						</div>
+					</div>
 					<div className="p-2" />
 				</div>
 			</div>
