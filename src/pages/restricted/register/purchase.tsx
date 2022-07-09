@@ -21,7 +21,7 @@ const Purchase: NextPage = () => {
 	const purchase = trpc.useMutation("purchase.create");
 
 	return (
-		<div className="h-screen flex flex-col justify-center">
+		<div className="min-h-screen flex flex-col justify-center">
 			<RegisterGoods id={goodModalId} />
 			<RegisterSupplier id={supplierModalId} />
 			<div className="text-2xl flex flex-row justify-center">

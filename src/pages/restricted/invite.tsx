@@ -12,7 +12,7 @@ const Invite: NextPage = () => {
 	const dataLoaded = invited.data && !invited.isLoading;
 
 	return (
-		<div className="h-screen flex flex-col justify-center">
+		<div className="min-h-screen flex flex-col justify-center">
 			<div className="text-2xl flex flex-row justify-center">Invite User</div>
 			<div className="p-2" />
 			<Formik

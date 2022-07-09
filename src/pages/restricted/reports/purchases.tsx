@@ -25,7 +25,7 @@ const PurchaseReports: NextPage = () => {
 	]);
 
 	return (
-		<div className="h-screen flex flex-col">
+		<div className="flex flex-col">
 			<div className="p-2" />
 			<div className="text-2xl flex flex-row justify-center">Purchases</div>
 			<div className="p-2" />
