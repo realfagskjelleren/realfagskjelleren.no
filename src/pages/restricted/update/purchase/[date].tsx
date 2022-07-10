@@ -38,7 +38,9 @@ const UpdatePurchase: NextPage = () => {
 		!users.isLoading &&
 		users.data &&
 		!suppliers.isLoading &&
-		suppliers.data;
+		suppliers.data &&
+		!purchase.isLoading &&
+		purchase.data;
 
 	const purchaseObject = {
 		category: "" as Category,
@@ -70,7 +72,7 @@ const UpdatePurchase: NextPage = () => {
 			<div className="p-2" />
 			{updatePurchase.isSuccess && <SuccessFormAlert updated={"purchase"} />}
 			<div className="p-2" />
-			{!purchase.isLoading && purchase.data && purchase.data[0] && (
+			{dataLoaded && purchase.data[0] && (
 				<Formik
 					initialValues={{
 						receiverId: `${purchase.data[0]?.receiverId}`,
@@ -113,18 +115,14 @@ const UpdatePurchase: NextPage = () => {
 					}}
 				>
 					{({ values }) => (
-						<>
-							{dataLoaded && (
-								<PurchaseForm
-									users={users.data}
-									suppliers={suppliers.data}
-									supplierModalId={supplierModalId}
-									values={values}
-									goods={goods.data}
-									goodModalId={goodModalId}
-								/>
-							)}
-						</>
+						<PurchaseForm
+							users={users.data}
+							suppliers={suppliers.data}
+							supplierModalId={supplierModalId}
+							values={values}
+							goods={goods.data}
+							goodModalId={goodModalId}
+						/>
 					)}
 				</Formik>
 			)}

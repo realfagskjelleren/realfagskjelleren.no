@@ -5,18 +5,26 @@ import { trpc } from "@/utils/trpc";
 import { Category } from "@prisma/client";
 import { Formik } from "formik";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import React from "react";
 
 const Sale: NextPage = () => {
+	const router = useRouter();
 	const saleObject = {
 		category: "" as Category,
 		goodId: "",
 		units: "",
 		pricePerUnit: "",
 	};
+	const utils = trpc.useContext();
 	const goods = trpc.useQuery(["good.allByCategory"]);
 	const users = trpc.useQuery(["user.all"]);
-	const sale = trpc.useMutation("sale.create");
+	const sale = trpc.useMutation("sale.create", {
+		onSuccess: () => {
+			utils.invalidateQueries("sale.allInPeriod");
+			router.push("/restricted/reports/sales");
+		},
+	});
 
 	const dataLoaded =
 		!goods.isLoading && goods.data && !users.isLoading && users.data;
