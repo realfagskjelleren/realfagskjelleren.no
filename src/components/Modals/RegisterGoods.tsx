@@ -2,7 +2,7 @@ import React from "react";
 import { Category } from "@prisma/client";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { InferMutationInput, trpc } from "@/utils/trpc";
-import { ErrorFormAlert, SuccessFormAlert } from "./FormAlerts";
+import { ErrorFormAlert, SuccessFormAlert } from "../Forms/FormAlerts";
 
 const RegisterGoods: React.FC<{ id: string }> = (props) => {
 	const utils = trpc.useContext();

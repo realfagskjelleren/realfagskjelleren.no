@@ -1,7 +1,10 @@
-import { ErrorFormAlert, SuccessFormAlert } from "@/components/FormAlerts";
-import PurchaseForm from "@/components/PurchaseForm";
-import RegisterGoods from "@/components/RegisterGoods";
-import RegisterSupplier from "@/components/RegisterSupplier";
+import {
+	ErrorFormAlert,
+	SuccessFormAlert,
+} from "@/components/Forms/FormAlerts";
+import PurchaseForm from "@/components/Forms/PurchaseForm";
+import RegisterGoods from "@/components/Modals/RegisterGoods";
+import RegisterSupplier from "@/components/Modals/RegisterSupplier";
 import { dateAsUTC } from "@/utils/dateHelpers";
 import { trpc } from "@/utils/trpc";
 import { Category } from "@prisma/client";

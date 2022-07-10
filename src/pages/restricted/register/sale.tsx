@@ -1,5 +1,8 @@
-import { ErrorFormAlert, SuccessFormAlert } from "@/components/FormAlerts";
-import SaleForm from "@/components/SaleForm";
+import {
+	ErrorFormAlert,
+	SuccessFormAlert,
+} from "@/components/Forms/FormAlerts";
+import SaleForm from "@/components/Forms/SaleForm";
 import { dateAsUTC } from "@/utils/dateHelpers";
 import { trpc } from "@/utils/trpc";
 import { Category } from "@prisma/client";
