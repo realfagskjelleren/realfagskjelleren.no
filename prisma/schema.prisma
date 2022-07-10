@@ -52,6 +52,7 @@ model User {
     accounts      Account[]
     sessions      Session[]
     purchases     Purchase[]
+    Sale          Sale[]
 }
 
 model VerificationToken {
@@ -87,6 +88,7 @@ model Good {
     volume    Float
     category  Category
     purchases Purchase[]
+    sales     Sale[]
 
     @@unique([name, brand, volume])
 }
@@ -96,7 +98,6 @@ model Supplier {
     name      String
     orgNum    Int        @unique
     purchases Purchase[]
-
 }
 
 model Purchase {
@@ -112,4 +113,17 @@ model Purchase {
     supplier     Supplier @relation(fields: [supplierId], references: [id])
 
     @@unique([goodId, dateReceived, supplierId])
+}
+
+model Sale {
+    id            Int      @id @default(autoincrement())
+    goodId        Int
+    good          Good     @relation(fields: [goodId], references: [id])
+    pricePerUnit  Float
+    units         Int
+    dateSold      DateTime
+    responsibleId String
+    responsible   User     @relation(fields: [responsibleId], references: [id])
+
+    @@unique([goodId, dateSold])
 }

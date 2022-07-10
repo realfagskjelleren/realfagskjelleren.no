@@ -19,13 +19,13 @@ export const SupplierField: React.FC<{
 	);
 };
 
-export const ReceiverField: React.FC<{
+export const UserField: React.FC<{
 	name: string;
 	users: InferQueryOutput<"user.all">;
 }> = (props) => {
 	return (
 		<Field className="select" as="select" name={props.name}>
-			<option>--Select receiver--</option>
+			<option>--Select user--</option>
 			{props.users.map((user, index) => (
 				<option key={index} value={user.id}>
 					{user.name}

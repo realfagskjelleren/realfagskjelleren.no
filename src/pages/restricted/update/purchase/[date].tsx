@@ -1,7 +1,10 @@
-import { ErrorFormAlert, SuccessFormAlert } from "@/components/FormAlerts";
-import PurchaseForm from "@/components/PurchaseForm";
-import RegisterGoods from "@/components/RegisterGoods";
-import RegisterSupplier from "@/components/RegisterSupplier";
+import {
+	ErrorFormAlert,
+	SuccessFormAlert,
+} from "@/components/Forms/FormAlerts";
+import PurchaseForm from "@/components/Forms/PurchaseForm";
+import RegisterGoods from "@/components/Modals/RegisterGoods";
+import RegisterSupplier from "@/components/Modals/RegisterSupplier";
 import { dateAsUTC } from "@/utils/dateHelpers";
 import { trpc } from "@/utils/trpc";
 import { Category } from "@prisma/client";
@@ -38,7 +41,9 @@ const UpdatePurchase: NextPage = () => {
 		!users.isLoading &&
 		users.data &&
 		!suppliers.isLoading &&
-		suppliers.data;
+		suppliers.data &&
+		!purchase.isLoading &&
+		purchase.data;
 
 	const purchaseObject = {
 		category: "" as Category,
@@ -70,7 +75,7 @@ const UpdatePurchase: NextPage = () => {
 			<div className="p-2" />
 			{updatePurchase.isSuccess && <SuccessFormAlert updated={"purchase"} />}
 			<div className="p-2" />
-			{!purchase.isLoading && purchase.data && purchase.data[0] && (
+			{dataLoaded && purchase.data[0] && (
 				<Formik
 					initialValues={{
 						receiverId: `${purchase.data[0]?.receiverId}`,
@@ -113,18 +118,14 @@ const UpdatePurchase: NextPage = () => {
 					}}
 				>
 					{({ values }) => (
-						<>
-							{dataLoaded && (
-								<PurchaseForm
-									users={users.data}
-									suppliers={suppliers.data}
-									supplierModalId={supplierModalId}
-									values={values}
-									goods={goods.data}
-									goodModalId={goodModalId}
-								/>
-							)}
-						</>
+						<PurchaseForm
+							users={users.data}
+							suppliers={suppliers.data}
+							supplierModalId={supplierModalId}
+							values={values}
+							goods={goods.data}
+							goodModalId={goodModalId}
+						/>
 					)}
 				</Formik>
 			)}

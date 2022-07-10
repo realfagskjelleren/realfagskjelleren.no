@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Pagination, Period } from "@/components/Pagination";
 
-const PurchaseReports: NextPage = () => {
+const SaleReports: NextPage = () => {
 	const today = new Date();
 	const monthStart = new Date(
 		Date.UTC(today.getFullYear(), today.getMonth(), 1, 0)
@@ -20,19 +20,19 @@ const PurchaseReports: NextPage = () => {
 	const take = 10;
 	const [cursor, setCursor] = useState(0);
 
-	const pReports = trpc.useQuery([
-		"purchase.allInPeriod",
+	const sReports = trpc.useQuery([
+		"sale.allInPeriod",
 		{ start: new Date(start), end: new Date(end) },
 	]);
 
-	const dataLoaded = !pReports.isLoading && pReports.data;
+	const dataLoaded = !sReports.isLoading && sReports.data;
 
 	return (
 		<div className="min-h-screen flex flex-col">
 			{dataLoaded && (
 				<>
 					<div className="p-2" />
-					<div className="text-2xl flex flex-row justify-center">Purchases</div>
+					<div className="text-2xl flex flex-row justify-center">Sales</div>
 					<div className="p-2" />
 					<div className="flex flex-row items-center justify-between">
 						<Period
@@ -41,31 +41,31 @@ const PurchaseReports: NextPage = () => {
 							end={end}
 							setEnd={setEnd}
 						/>
-						{pReports.data.length > 10 && (
+						{sReports.data.length > 10 && (
 							<div className="flex flex-row">
 								<Pagination
 									cursor={cursor}
 									setCursor={setCursor}
 									take={take}
-									length={pReports.data.length}
+									length={sReports.data.length}
 								/>
 							</div>
 						)}
 					</div>
 					<div className="p-2" />
-					{pReports.data.slice(cursor, cursor + take).map((pReport, index) => (
+					{sReports.data.slice(cursor, cursor + take).map((sReport, index) => (
 						<div key={index}>
-							<PurchaseCard pReport={pReport} />
+							<SaleCard sReport={sReport} />
 							<div className="p-2" />
 						</div>
 					))}
-					{pReports.data.length > 10 && (
+					{sReports.data.length > 10 && (
 						<div className="flex flex-row justify-end">
 							<Pagination
 								cursor={cursor}
 								setCursor={setCursor}
 								take={take}
-								length={pReports.data.length}
+								length={sReports.data.length}
 							/>
 						</div>
 					)}
@@ -75,15 +75,15 @@ const PurchaseReports: NextPage = () => {
 	);
 };
 
-export default PurchaseReports;
+export default SaleReports;
 
-const PurchaseCard: React.FC<{
-	pReport: InferQueryOutput<"purchase.allInPeriod">[number];
+const SaleCard: React.FC<{
+	sReport: InferQueryOutput<"sale.allInPeriod">[number];
 }> = (props) => {
 	const utils = trpc.useContext();
-	const deleteReport = trpc.useMutation("purchase.delete", {
+	const deleteReport = trpc.useMutation("sale.delete", {
 		onSuccess: () => {
-			utils.invalidateQueries("purchase.allInPeriod");
+			utils.invalidateQueries("sale.allInPeriod");
 		},
 	});
 	return (
@@ -91,13 +91,10 @@ const PurchaseCard: React.FC<{
 			<input type="checkbox" />
 			<div className="collapse-title flex flex-row bg-primary-content rounded-t-lg p-0">
 				<div className="grid flex-grow place-items-center">
-					{dateToString(props.pReport.dateReceived)}
+					{dateToString(props.sReport.dateSold)}
 				</div>
 				<div className="grid flex-grow place-items-center">
-					{props.pReport.supplier}
-				</div>
-				<div className="grid flex-grow place-items-center">
-					{props.pReport.totalValue.toFixed(2)} kr
+					{props.sReport.totalValue.toFixed(2)} kr
 				</div>
 			</div>
 			<div className="collapse-content p-0">
@@ -106,19 +103,21 @@ const PurchaseCard: React.FC<{
 						<tr className="">
 							<th className="w-1/4">Category</th>
 							<th className="w-1/4">Good</th>
-							<th className="w-1/4">Price</th>
 							<th className="w-1/4">Units</th>
+							<th className="w-1/4">Price per unit</th>
+							<th className="w-1/4">Value</th>
 						</tr>
 					</thead>
 					<tbody>
-						{props.pReport.purchase.map((p, index) => (
+						{props.sReport.sale.map((s, index) => (
 							<tr key={index} className="">
-								<td>{p.category}</td>
+								<td>{s.category}</td>
 								<td>
-									{p.brand} - {p.name} - {p.volume}
+									{s.brand} - {s.name} - {s.volume}
 								</td>
-								<td>{p.value.toFixed(2)} kr</td>
-								<td>{p.units}</td>
+								<td>{s.units}</td>
+								<td>{s.pricePerUnit.toFixed(2)} kr</td>
+								<td>{s.value.toFixed(2)} kr</td>
 							</tr>
 						))}
 					</tbody>
@@ -127,33 +126,33 @@ const PurchaseCard: React.FC<{
 				<div className="flex flex-row items-center justify-between">
 					<div className="flex flex-row items-center">
 						<div className="p-1" />
-						<div className="font-bold">Receiver: </div>
+						<div className="font-bold">Responsible: </div>
 						<div className="p-1" />
 						<div className="flex space-x-3 items-center">
-							{props.pReport.receiverImage && (
+							{props.sReport.responsibleImage && (
 								<div className="avatar">
 									<div className="w-8 mask mask-squircle">
 										<Image
 											width={32}
 											height={32}
 											layout={"fixed"}
-											src={props.pReport.receiverImage}
+											src={props.sReport.responsibleImage}
 										/>
 									</div>
 								</div>
 							)}
 							<Link
-								href={`/restricted/profile/${props.pReport.receiverId}`}
+								href={`/restricted/profile/${props.sReport.responsibleId}`}
 								passHref
 							>
-								<a className="link link-hover">{props.pReport.receiver}</a>
+								<a className="link link-hover">{props.sReport.responsible}</a>
 							</Link>
 						</div>
 					</div>
 					<div className="flex flex-row">
 						<Link
-							href={`/restricted/update/purchase/${dateToURL(
-								props.pReport.dateReceived
+							href={`/restricted/update/sale/${dateToURL(
+								props.sReport.dateSold
 							)}`}
 							passHref
 						>
@@ -174,8 +173,7 @@ const PurchaseCard: React.FC<{
 										className="btn btn-xs btn-error m-2"
 										onClick={() => {
 											deleteReport.mutate({
-												dateReceived: props.pReport.dateReceived,
-												supplierId: props.pReport.supplierId,
+												dateSold: props.sReport.dateSold,
 											});
 										}}
 									>

@@ -1,7 +1,7 @@
 import { trpc } from "@/utils/trpc";
 import { Field, Form, Formik } from "formik";
 import React from "react";
-import { ErrorFormAlert, SuccessFormAlert } from "./FormAlerts";
+import { ErrorFormAlert, SuccessFormAlert } from "../Forms/FormAlerts";
 
 const RegisterSupplier: React.FC<{ id: string }> = (props) => {
 	const utils = trpc.useContext();
