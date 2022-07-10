@@ -5,63 +5,42 @@ import React from "react";
 import {
 	CategoryField,
 	GoodField,
-	SupplierField,
 	TimeField,
 	UserField,
 } from "./InventoryFields";
 
-const PurchaseForm: React.FC<{
+const SaleForm: React.FC<{
 	users: InferQueryOutput<"user.all">;
-	suppliers: InferQueryOutput<"supplier.all">;
-	supplierModalId: string;
 	values: {
-		receiverId: string;
-		supplierId: string;
-		dateReceived: string;
+		responsibleId: string;
+		dateSold: string;
 		time: string;
-		goodsPurchased: Array<{
+		goodsSold: Array<{
 			category: Category;
 			goodId: string;
 			units: string;
-			price: string;
+			pricePerUnit: string;
 		}>;
 	};
 	goods: InferQueryOutput<"good.allByCategory">;
-	goodModalId: string;
-}> = ({ users, suppliers, supplierModalId, values, goods, goodModalId }) => {
-	const purchaseObject = {
+}> = ({ users, values, goods }) => {
+	const saleObject = {
 		category: "" as Category,
 		goodId: "",
 		units: "",
-		price: "",
+		pricePerUnit: "",
 	};
 
 	return (
 		<Form className="w-full shadow-xl p-4">
 			<div className="flex flex-row justify-evenly">
 				<div>
-					<label className="label label-text col-span-2">Receiver</label>
-					<UserField name={"receiverId"} users={users} />
-				</div>
-				<div className="flex flex-row">
-					<div>
-						<label className="label label-text col-span-2">Supplier</label>
-						<SupplierField name={"supplierId"} suppliers={suppliers} />
-					</div>
-					<div className="p-1" />
-					<div>
-						<label className="label label-text col-span-2">Add supplier</label>
-						<label
-							htmlFor={supplierModalId}
-							className="btn modal-button w-12 h-12"
-						>
-							+
-						</label>
-					</div>
+					<label className="label label-text col-span-2">Responsible</label>
+					<UserField name={"responsibleId"} users={users} />
 				</div>
 				<div>
 					<label className="label label-text col-span-2">Date</label>
-					<Field className="input" type="date" name="dateReceived" />
+					<Field className="input" type="date" name="dateSold" />
 				</div>
 				<div>
 					<label className="label label-text col-span-2">Time</label>
@@ -70,43 +49,34 @@ const PurchaseForm: React.FC<{
 			</div>
 			<div className="divider" />
 			<FieldArray
-				name="goodsPurchased"
+				name="goodsSold"
 				render={(arrayHelpers) => (
-					<div className="grid grid-cols-11 gap-2">
+					<div className="grid grid-cols-10 gap-2">
 						<label className="label label-text col-span-2">Category</label>
 						<label className="label label-text col-span-2">Good</label>
-						<label className="label label-text col-span-1">Add good</label>
 						<label className="label label-text col-span-2">Units</label>
 						<label className="label label-text col-span-2">
-							Price (no VAT)
+							Price per unit
 						</label>
 						<label className="label label-text">Add</label>
 						<label className="label label-text">Remove</label>
-						{values.goodsPurchased && values.goodsPurchased.length > 0 ? (
-							values.goodsPurchased.map((good, index) => (
+						{values.goodsSold && values.goodsSold.length > 0 ? (
+							values.goodsSold.map((good, index) => (
 								<div
 									key={index}
-									className="grid grid-cols-11 gap-2 col-span-11 items-center"
+									className="grid grid-cols-10 gap-2 col-span-11 items-center"
 								>
-									<CategoryField name={`goodsPurchased[${index}].category`} />
+									<CategoryField name={`goodsSold[${index}].category`} />
 									<GoodField
-										name={`goodsPurchased[${index}].goodId`}
-										category={
-											values.goodsPurchased[index]?.category as Category
-										}
+										name={`goodsSold[${index}].goodId`}
+										category={values.goodsSold[index]?.category as Category}
 										goods={goods}
 									/>
-									<label
-										htmlFor={goodModalId}
-										className="btn modal-button w-12 h-12"
-									>
-										+
-									</label>
 									<Field
 										className="input col-span-2"
 										type="number"
 										min="1"
-										name={`goodsPurchased[${index}].units`}
+										name={`goodsSold[${index}].units`}
 										placeholder="Units"
 									/>
 									<Field
@@ -114,7 +84,7 @@ const PurchaseForm: React.FC<{
 										type="number"
 										step="0.01"
 										min="0.01"
-										name={`goodsPurchased[${index}].price`}
+										name={`goodsSold[${index}].pricePerUnit`}
 										placeholder="Price"
 									/>
 									<button
@@ -128,7 +98,7 @@ const PurchaseForm: React.FC<{
 										type="button"
 										className="btn btn-secondary w-12 h-12"
 										onClick={() => {
-											arrayHelpers.insert(index, purchaseObject);
+											arrayHelpers.insert(index, saleObject);
 										}}
 									>
 										+
@@ -140,7 +110,7 @@ const PurchaseForm: React.FC<{
 								<button
 									type="button"
 									className="btn btn-secondary"
-									onClick={() => arrayHelpers.push(purchaseObject)}
+									onClick={() => arrayHelpers.push(saleObject)}
 								>
 									Add purchase
 								</button>
@@ -159,4 +129,4 @@ const PurchaseForm: React.FC<{
 	);
 };
 
-export default PurchaseForm;
+export default SaleForm;
