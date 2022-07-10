@@ -119,7 +119,9 @@ const saleReports = (
 		responsibleImage?: string;
 		dateSold: Date;
 		totalValue: number;
-		sale: Array<Pick<Sale, "units"> & Good & { value: number }>;
+		sale: Array<
+			Pick<Sale, "units" | "pricePerUnit"> & Good & { value: number }
+		>;
 	} = {
 		responsibleId: "",
 		responsible: "",
@@ -139,6 +141,7 @@ const saleReports = (
 			volume: s?.good.volume as number,
 			category: s?.good.category as Category,
 			units: s?.units as number,
+			pricePerUnit: s?.pricePerUnit as number,
 			value: (s?.units as number) * (s?.pricePerUnit as number),
 		});
 

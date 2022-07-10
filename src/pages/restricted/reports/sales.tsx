@@ -104,6 +104,7 @@ const SaleCard: React.FC<{
 							<th className="w-1/4">Category</th>
 							<th className="w-1/4">Good</th>
 							<th className="w-1/4">Units</th>
+							<th className="w-1/4">Price per unit</th>
 							<th className="w-1/4">Value</th>
 						</tr>
 					</thead>
@@ -115,6 +116,7 @@ const SaleCard: React.FC<{
 									{s.brand} - {s.name} - {s.volume}
 								</td>
 								<td>{s.units}</td>
+								<td>{s.pricePerUnit.toFixed(2)} kr</td>
 								<td>{s.value.toFixed(2)} kr</td>
 							</tr>
 						))}
